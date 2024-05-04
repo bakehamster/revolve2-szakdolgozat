@@ -56,9 +56,6 @@ def scene_to_model(
     env_mjcf.compiler.angle = "radian"
 
     env_mjcf.option.timestep = 0.01
-    env_mjcf.option.integrator = "implicitfast"
-    env_mjcf.option.solver = "CG"
-
     env_mjcf.option.gravity = [0, 0, -9.81]
 
     env_mjcf.extension.add(
@@ -74,9 +71,6 @@ def scene_to_model(
         castshadow=cast_shadows,
     )
     env_mjcf.visual.headlight.active = 0
-
-    # ball = mjcf.from_file("C:\\Users\\eonody\\Desktop\\temp_model\\sphere_basic.xml")
-    # env_mjcf.attach(ball)
 
     conversions = [
         multi_body_system_to_urdf(multi_body_system, f"mbs{multi_body_system_index}")
@@ -178,7 +172,7 @@ def scene_to_model(
 
         # Add IMUs
         for rigid_body, name in rigid_bodies_and_names:
-            if len(rigid_body.imu_sensors) > 0:
+            if hasattr(rigid_body, "imu_sensors") and len(rigid_body.imu_sensors) > 0:
                 if name == f"mbs{mbs_i}":
                     rigid_body_mjcf = multi_body_system_mjcf.worldbody
                 else:
@@ -341,15 +335,16 @@ def scene_to_model(
     # Create IMU map
     for mbs_i, rigid_bodies_and_names in enumerate(all_rigid_bodies_and_names):
         for rigid_body, name in rigid_bodies_and_names:
-            for imu_i, imu in enumerate(rigid_body.imu_sensors):
-                gyro_name = f"imu_gyro_{name}_{imu_i}"
-                accelerometer_name = f"imu_accelerometer_{name}_{imu_i}"
-                mapping.imu_sensor[UUIDKey(imu)] = IMUSensorMujoco(
-                    gyro_id=model.sensor(f"mbs{mbs_i}/{gyro_name}").id,
-                    accelerometer_id=model.sensor(
-                        f"mbs{mbs_i}/{accelerometer_name}"
-                    ).id,
-                )
+            if hasattr(rigid_body, "imu_sensors"):
+                for imu_i, imu in enumerate(rigid_body.imu_sensors):
+                    gyro_name = f"imu_gyro_{name}_{imu_i}"
+                    accelerometer_name = f"imu_accelerometer_{name}_{imu_i}"
+                    mapping.imu_sensor[UUIDKey(imu)] = IMUSensorMujoco(
+                        gyro_id=model.sensor(f"mbs{mbs_i}/{gyro_name}").id,
+                        accelerometer_id=model.sensor(
+                            f"mbs{mbs_i}/{accelerometer_name}"
+                        ).id,
+                    )
 
     return (model, mapping)
 

@@ -3,7 +3,9 @@ import numpy as np
 from pyrr import Vector3
 
 from revolve2.modular_robot.body import RightAngles
-from revolve2.modular_robot.body.v2 import ActiveHingeV2, BodyV2, BrickV2
+from revolve2.modular_robot.body.v2 import ActiveHingeV2, BrickV2
+
+from modular_robot.revolve2.modular_robot.body.v2 import BodyV2
 
 
 def all() -> list[BodyV2]:

@@ -1,8 +1,8 @@
 from pyrr import Vector3
+from revolve2.modular_robot.body.v2 import CoreV2
 
 from .. import RightAngles
-from ..base._body import Body
-from ._core_v2 import CoreV2
+from ..base import Body
 
 
 class BodyV2(Body):

@@ -2,13 +2,20 @@
 
 
 from pyrr import Quaternion, Vector3
+from revolve2.ci_group.simulation_parameters import make_standard_batch_parameters
+from revolve2.experimentation.logging import setup_logging
+from revolve2.experimentation.rng import make_rng_time_seed
+from revolve2.modular_robot import ModularRobot
+from revolve2.modular_robot.brain.cpg import BrainCpgNetworkNeighborRandom
+from revolve2.modular_robot_simulation import Terrain, simulate_scenes, ModularRobotScene
+from revolve2.simulation.scene import Pose, Color, AABB
+from revolve2.simulation.scene.geometry import GeometryPlane, GeometryBox
+from revolve2.simulation.scene.geometry.textures import Texture
+from revolve2.simulators.mujoco_simulator.textures import Checker
+from revolve2.ci_group.modular_robots_v2 import gecko_v2
 
-from revolve2.ci_group.revolve2.ci_group.modular_robots_v2 import darts_robot
-from revolve2.modular_robot_simulation.revolve2.modular_robot_simulation import Terrain
-from revolve2.simulation.revolve2.simulation.scene import Pose, Color
-from revolve2.simulation.revolve2.simulation.scene.geometry import GeometryPlane, GeometryBox, GeometryCylinder
-from revolve2.simulation.revolve2.simulation.scene.geometry.textures import MapType
-from revolve2.simulators.mujoco_simulator.revolve2.simulators.mujoco_simulator.textures import Checker, Flat
+from simulation.revolve2.simulation.scene.geometry.textures import MapType
+from simulators.mujoco_simulator.revolve2.simulators.mujoco_simulator import LocalSimulator
 
 
 def make_custom_terrain() -> Terrain:
@@ -34,18 +41,10 @@ def make_custom_terrain() -> Terrain:
             GeometryBox(
                 pose=Pose(position=Vector3([0.0, 4.1, 0.5]), orientation=Quaternion.from_x_rotation(-90)),
                 mass=0.0,
-                texture=Flat(
+                texture=Texture(
                     primary_color=Color(100, 150, 0, 50)
                 ),
                 aabb=AABB(Vector3([1.0, 1.0, 0.15]))
-            ),
-            GeometryCylinder(
-                pose=Pose(position=Vector3([0.0, 4, 0.515]), orientation=Quaternion.from_x_rotation(-90)),
-                mass=0.0,
-                texture=Flat(
-                    primary_color=Color(0, 255, 0, 255)
-                ),
-                size=Vector2((1, 0.025))
             )
         ]
     )
@@ -60,7 +59,7 @@ def main() -> None:
     rng = make_rng_time_seed()
 
     # Create a robot
-    body = darts_robot()
+    body = gecko_v2()
     brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
     robot = ModularRobot(body, brain)
 

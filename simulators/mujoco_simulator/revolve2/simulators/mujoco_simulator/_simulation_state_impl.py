@@ -119,5 +119,5 @@ class SimulationStateImpl(SimulationState):
         angular_rate = self._sensordata[gyro_id : gyro_id + 3]
         return Vector3(angular_rate)
 
-    def get_contect_points(self):
+    def get_camera_view(self, camera_sensor):
         pass
